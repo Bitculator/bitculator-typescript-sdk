@@ -1,0 +1,31 @@
+{
+  "name": "@bitculator/sdk",
+  "version": "1.0.0",
+  "description": "Official TypeScript/JavaScript SDK for the Bitculator Data API",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "engines": { "node": ">=18" },
+  "sideEffects": false,
+  "repository": { "type": "git", "url": "https://github.com/bitculator/bitculator-typescript-sdk.git" },
+  "publishConfig": { "access": "public" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit && tsc -p examples/tsconfig.json",
+    "sync-version": "node -e \"const fs=require('fs');const v=require('./package.json').version;const q=String.fromCharCode(39);fs.writeFileSync('src/version.ts','/** SDK version, sent in the User-Agent header. Kept in sync with package.json. */\\nexport const VERSION = '+q+v+q+';\\n')\"",
+    "prepublishOnly": "npm run sync-version && npm run build"
+  },
+  "keywords": ["bitculator", "crypto", "cryptocurrency", "market-data", "api", "sdk"],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}
