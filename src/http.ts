@@ -67,7 +67,7 @@ export class HttpClient {
       try {
         payload = JSON.stringify(snakeKeys(opts.body));
       } catch (err) {
-        throw new BitculatorError(`Failed to encode request body: ${(err as Error).message}`, { cause: err });
+        throw new BitculatorError(`Failed to encode request body: ${errorMessage(err)}`, { cause: err });
       }
     }
 
@@ -77,6 +77,10 @@ export class HttpClient {
 
     let attempt = 0;
     for (;;) {
+      // Deliberately a manual AbortController + ref'd setTimeout, NOT
+      // AbortSignal.timeout(): that helper's timer is unref'd in Node, so with
+      // an injected `fetch` that holds no I/O handles the event loop can drain
+      // and the timeout would never fire. A ref'd timer guarantees it does.
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), this.cfg.timeout);
       let res: Response;
@@ -96,7 +100,7 @@ export class HttpClient {
         if (err instanceof Error && err.name === 'AbortError') {
           throw new TimeoutError(`Request to ${path} timed out after ${this.cfg.timeout}ms`);
         }
-        throw new BitculatorError(`Network error requesting ${path}: ${(err as Error).message}`, { cause: err });
+        throw new BitculatorError(`Network error requesting ${path}: ${errorMessage(err)}`, { cause: err });
       } finally {
         clearTimeout(timer);
       }
@@ -110,7 +114,7 @@ export class HttpClient {
         try {
           return JSON.parse(text);
         } catch (err) {
-          throw new DecodeError(`Failed to decode response body from ${path}: ${(err as Error).message}`, { cause: err });
+          throw new DecodeError(`Failed to decode response body from ${path}: ${errorMessage(err)}`, { cause: err });
         }
       }
 
@@ -136,6 +140,9 @@ export class HttpClient {
 // ── helpers (all pure; the single place these concerns are implemented) ─────
 
 const camelToSnake = (key: string): string => key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
+
+/** Extract a human-readable message from an unknown caught value. */
+const errorMessage = (err: unknown): string => (err instanceof Error ? err.message : String(err));
 
 /** Serialize params to a query string: camelCase→snake_case keys, arrays→CSV, nullish dropped. */
 function serializeQuery(params?: QueryInput): string {
@@ -195,9 +202,11 @@ function snakeKeys(body: unknown): unknown {
 /** Collect the `x-quota-*` headers into a typed {@link Quota}. */
 function parseQuota(headers: Headers): Quota {
   const raw: Record<string, string> = {};
-  headers.forEach((value, key) => {
+  for (const [key, value] of headers) {
+    // Header names are already lower-cased by Headers iteration per spec;
+    // toLowerCase() guards custom fetch doubles that hand-build entries.
     if (key.toLowerCase().startsWith('x-quota-')) raw[key.toLowerCase()] = value;
-  });
+  }
   const num = (name: string): number | null => {
     const v = raw[name];
     return v !== undefined && v !== '' ? Number(v) : null;

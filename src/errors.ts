@@ -8,11 +8,9 @@
 /** Base class for every error thrown by the SDK. */
 export class BitculatorError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
-    super(message);
+    // Native ES2022 error cause — Error itself installs `cause` when present.
+    super(message, options);
     this.name = new.target.name;
-    if (options?.cause !== undefined) {
-      (this as { cause?: unknown }).cause = options.cause;
-    }
   }
 }
 
