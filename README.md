@@ -1,5 +1,8 @@
 # Bitculator Data API — TypeScript / JavaScript SDK
 
+[bitculator.com](https://bitculator.com) · [API documentation](https://bitculator.com/en/documentation/api/v1) · [Get an API key](https://bitculator.com/user/developer/api)
+[npm — `@bitculator/sdk`](https://www.npmjs.com/package/@bitculator/sdk) · [GitHub](https://github.com/Bitculator/bitculator-typescript-sdk)
+
 The official SDK for the [Bitculator Data API](https://bitculator.com). Fully typed,
 zero runtime dependencies (uses the platform `fetch`), works in Node 18+, Deno,
 Bun, and the browser.
