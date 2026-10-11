@@ -13,7 +13,7 @@ export class SentimentResource extends Resource {
     return this.http.post<T>(`/api/v1/coins/${this.p(slug)}/votes`, body);
   }
 
-  /** Fear & Greed index. */
+  /** Fear & Greed index. Params: coin. Each reading carries `index` (0-100, as shown on Bitculator; use it for display) and the raw `score` (-100..+100). */
   fearGreed<T = Json>(params?: { coin?: string }): Promise<T> {
     return this.http.get<T>('/api/v1/sentiment/fear-greed', params);
   }

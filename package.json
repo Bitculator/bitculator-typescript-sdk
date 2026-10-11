@@ -1,6 +1,6 @@
 {
   "name": "@bitculator/sdk",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Official TypeScript/JavaScript SDK for the Bitculator Data API",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,7 +31,7 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit && tsc -p examples/tsconfig.json",
     "test": "tsc -p tsconfig.tests.json && node --test .tests-dist/tests/",
-    "sync-version": "node -e \"const fs=require('fs');const v=require('./package.json').version;const q=String.fromCharCode(39);fs.writeFileSync('src/version.ts','/** SDK version, sent in the User-Agent header. Kept in sync with package.json. */\\nexport const VERSION = '+q+v+q+';\\n')\"",
+    "sync-version": "node scripts/sync-version.mjs",
     "prepublishOnly": "npm run sync-version && npm run build"
   },
   "keywords": [

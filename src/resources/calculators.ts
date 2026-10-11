@@ -27,7 +27,7 @@ export class CalculatorsResource extends Resource {
     return this.http.get<T>('/api/v1/calculators/profit-loss', params);
   }
 
-  /** Compound interest calculator. */
+  /** Compound interest calculator. `rate` is the annual nominal rate in %; each compounding period earns `rate` divided by the periods per year. */
   compoundInterest<T = Json>(params?: {
     principal?: number;
     rate?: number;
